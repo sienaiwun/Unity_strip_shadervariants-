@@ -65,6 +65,7 @@ namespace UnityEngine.Rendering.LWRP
         Disabled,
         OnlyLightweightRPShaders,
         AllShaders,
+        ShowIfAbove,
     }
 
     public enum RendererType
@@ -72,6 +73,23 @@ namespace UnityEngine.Rendering.LWRP
         Custom,
         ForwardRenderer,
     }
+    [System.Serializable]
+    public class SpecifiedShaderKeyword
+    {
+        public string shadername;
+
+        public string[] keywords;
+    }
+    [System.Serializable]
+    public class StripVariantsInfo
+    {
+       
+        public string[] globalShaderNames;
+        public string[] globalKeywords;
+        public SpecifiedShaderKeyword[] specifiedShaders;
+
+    }
+
 
     public class LightweightRenderPipelineAsset : RenderPipelineAsset, ISerializationCallbackReceiver
     {
@@ -128,8 +146,10 @@ namespace UnityEngine.Rendering.LWRP
         [SerializeField] ShadowResolution m_ShadowAtlasResolution = ShadowResolution._256;
 
         [SerializeField] ShaderVariantLogLevel m_ShaderVariantLogLevel = ShaderVariantLogLevel.Disabled;
-
+        [SerializeField] int m_ShaderVariantShowNum = 20;
+        [SerializeField] KillShadersVariantsAsset m_killShaderVariantAsset;
 #if UNITY_EDITOR
+     
         [NonSerialized]
         internal LightweightRenderPipelineEditorResources m_EditorResourcesAsset;
 
@@ -199,6 +219,17 @@ namespace UnityEngine.Rendering.LWRP
                 return m_EditorResourcesAsset;
             }
         }
+        public StripVariantsInfo stripVariantsInfo
+        {
+            get
+            {
+                if (m_killShaderVariantAsset)
+                    return m_killShaderVariantAsset.m_stripVariantsInfo;
+                else
+                    return null;
+            }
+        }
+        
 #endif
 
         public ScriptableRendererData LoadBuiltinRendererData()
@@ -396,6 +427,12 @@ namespace UnityEngine.Rendering.LWRP
         {
             get { return m_ShaderVariantLogLevel; }
             set { m_ShaderVariantLogLevel = value; }
+        }
+
+        public int shaderVariantShowNum
+        {
+            get { return m_ShaderVariantShowNum; }
+            set { m_ShaderVariantShowNum = value; }
         }
         
         public bool useSRPBatcher

@@ -52,6 +52,7 @@ namespace UnityEditor.Rendering.LWRP
             public static GUIContent mixedLightingSupportLabel = EditorGUIUtility.TrTextContent("Mixed Lighting", "Support for mixed light mode.");
             
             public static GUIContent shaderVariantLogLevel = EditorGUIUtility.TrTextContent("Shader Variant Log Level", "Controls the level logging in of shader variants information is outputted when a build is performed. Information will appear in the Unity console when the build finishes.");
+            public static GUIContent shaderVariantNumberLabel = EditorGUIUtility.TrTextContent("Shader Variant Show Number", "Controls the number beyond which shader variants information is outputted when a build is performed. Information will appear in the Unity console when the build finishes.");
 
             // Dropdown menu options
             public static string[] mainLightOptions = { "Disabled", "Per Pixel" };
@@ -99,6 +100,8 @@ namespace UnityEditor.Rendering.LWRP
         SerializedProperty m_MixedLightingSupportedProp;
 
         SerializedProperty m_ShaderVariantLogLevel;
+        SerializedProperty m_ShaderVariantShowNumProp;
+        SerializedProperty m_killShaderVariantsAssetProp;
 
         internal static LightRenderingMode selectedLightRenderingMode;
 
@@ -156,6 +159,8 @@ namespace UnityEditor.Rendering.LWRP
             m_MixedLightingSupportedProp = serializedObject.FindProperty("m_MixedLightingSupported");
 
             m_ShaderVariantLogLevel = serializedObject.FindProperty("m_ShaderVariantLogLevel");
+            m_ShaderVariantShowNumProp = serializedObject.FindProperty("m_ShaderVariantShowNum");
+            m_killShaderVariantsAssetProp = serializedObject.FindProperty("m_killShaderVariantAsset");
             selectedLightRenderingMode = (LightRenderingMode)m_AdditionalLightsRenderingModeProp.intValue;
         }
 
@@ -302,6 +307,14 @@ namespace UnityEditor.Rendering.LWRP
                 EditorGUILayout.PropertyField(m_SupportsDynamicBatching, Styles.dynamicBatching);
                 EditorGUILayout.PropertyField(m_MixedLightingSupportedProp, Styles.mixedLightingSupportLabel);
                 EditorGUILayout.PropertyField(m_ShaderVariantLogLevel, Styles.shaderVariantLogLevel);
+                if (m_ShaderVariantLogLevel.enumValueIndex == (int)ShaderVariantLogLevel.ShowIfAbove)
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(m_ShaderVariantShowNumProp, Styles.shaderVariantNumberLabel);
+                    EditorGUI.indentLevel--;
+                }
+                EditorGUILayout.PropertyField(m_killShaderVariantsAssetProp);
+              
                 EditorGUI.indentLevel--;
                 EditorGUILayout.Space();
                 EditorGUILayout.Space();
