@@ -6,7 +6,9 @@ using UnityEditor.ProjectWindowCallback;
 
 namespace UnityEngine.Rendering.LWRP
 {
-   internal class KillShadersVariantsAsset : ScriptableObject
+
+    [CreateAssetMenu(menuName = "Shader/killShaderVariants")]
+    internal class KillShadersVariantsAsset : ScriptableObject
     {
         public StripVariantsInfo m_stripVariantsInfo;
     }

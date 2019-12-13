@@ -199,29 +199,30 @@ namespace UnityEditor.Rendering.LWRP
 
         void LogShaderVariants(Shader shader, ShaderSnippetData snippetData, ShaderVariantLogLevel logLevel, int prevVariantsCount, int currVariantsCount)
         {
-            if (logLevel == ShaderVariantLogLevel.AllShaders || shader.name.Contains("Lightweight Render Pipeline"))
+            Func<bool> showlog = () =>
+            {
+                if (logLevel == ShaderVariantLogLevel.AllShaders )
+                    return true;
+                if (logLevel == ShaderVariantLogLevel.OnlyLightweightRPShaders && shader.name.Contains("Lightweight Render Pipeline"))
+                    return true;
+                LightweightRenderPipelineAsset lwrpAsset = GraphicsSettings.renderPipelineAsset as LightweightRenderPipelineAsset;
+                if (logLevel == ShaderVariantLogLevel.ShowIfAbove && currVariantsCount > lwrpAsset.shaderVariantShowNum)
+                    return true;
+                return false;
+            };
+            if (showlog())
             {
                 float percentageCurrent = (float)currVariantsCount / (float)prevVariantsCount * 100f;
                 float percentageTotal = (float)m_TotalVariantsOutputCount / (float)m_TotalVariantsInputCount * 100f;
-                Func<bool> isShowShaderVariantsBeyondNumber = () => {
-                    if (logLevel == ShaderVariantLogLevel.AllShaders||logLevel == ShaderVariantLogLevel.OnlyLightweightRPShaders)
-                        return true;
-                    LightweightRenderPipelineAsset lwrpAsset = GraphicsSettings.renderPipelineAsset as LightweightRenderPipelineAsset;
-                    if (lwrpAsset == null)
-                        return true;
-                    if (logLevel == ShaderVariantLogLevel.ShowIfAbove && currVariantsCount > lwrpAsset.shaderVariantShowNum)
-                        return true;
-                    return false;
-                };
-                if(isShowShaderVariantsBeyondNumber())
-                {
-                    string result = string.Format("STRIPPING: {0} ({1} pass) ({2}) -" +
-                            " Remaining shader variants = {3}/{4} = {5}% - Total = {6}/{7} = {8}%",
-                            shader.name, snippetData.passName, snippetData.shaderType.ToString(), currVariantsCount,
-                            prevVariantsCount, percentageCurrent, m_TotalVariantsOutputCount, m_TotalVariantsInputCount,
-                            percentageTotal);
-                    Debug.Log(result);
-                }
+
+
+                string result = string.Format("STRIPPING: {0} ({1} pass) ({2}) -" +
+                        " Remaining shader variants = {3}/{4} = {5}% ||| Total = {6}/{7} = {8}%",
+                        shader.name, snippetData.passName, snippetData.shaderType.ToString(), currVariantsCount,
+                        prevVariantsCount, percentageCurrent, m_TotalVariantsOutputCount, m_TotalVariantsInputCount,
+                        percentageTotal);
+                Debug.Log(result);
+
             }
         }
 
