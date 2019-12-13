@@ -7,13 +7,7 @@
 
 #define MAX_SHADOW_CASCADES 4
 
-#ifndef SHADOWS_SCREEN
-#if defined(_MAIN_LIGHT_SHADOWS) && defined(_MAIN_LIGHT_SHADOWS_CASCADE) && !defined(SHADER_API_GLES)
-#define SHADOWS_SCREEN 1
-#else
 #define SHADOWS_SCREEN 0
-#endif
-#endif
 
 SCREENSPACE_TEXTURE(_ScreenSpaceShadowmapTexture);
 SAMPLER(sampler_ScreenSpaceShadowmapTexture);

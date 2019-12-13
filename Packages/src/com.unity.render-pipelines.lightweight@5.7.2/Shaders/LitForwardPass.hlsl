@@ -33,7 +33,7 @@ struct Varyings
 
     half4 fogFactorAndVertexLight   : TEXCOORD6; // x: fogFactor, yzw: vertex light
 
-#ifdef _MAIN_LIGHT_SHADOWS
+#if defined(_MAIN_LIGHT_SHADOWS) && !defined(_MAIN_LIGHT_SHADOWS_CASCADE)
     float4 shadowCoord              : TEXCOORD7;
 #endif
 
@@ -64,7 +64,11 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData inputData
 
     inputData.viewDirectionWS = viewDirWS;
 #if defined(_MAIN_LIGHT_SHADOWS) && !defined(_RECEIVE_SHADOWS_OFF)
-    inputData.shadowCoord = input.shadowCoord;
+    #if defined(_MAIN_LIGHT_SHADOWS_CASCADE)
+        inputData.shadowCoord = TransformWorldToShadowCoord(input.positionWS);;
+    #else
+        inputData.shadowCoord = input.shadowCoord;
+    #endif
 #else
     inputData.shadowCoord = float4(0, 0, 0, 0);
 #endif
@@ -111,7 +115,7 @@ Varyings LitPassVertex(Attributes input)
     output.positionWS = vertexInput.positionWS;
 #endif
 
-#if defined(_MAIN_LIGHT_SHADOWS) && !defined(_RECEIVE_SHADOWS_OFF)
+#if defined(_MAIN_LIGHT_SHADOWS) && !defined(_RECEIVE_SHADOWS_OFF) && !defined(_MAIN_LIGHT_SHADOWS_CASCADE)
     output.shadowCoord = GetShadowCoord(vertexInput);
 #endif
 
